@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class CronJob
 {
-    /** @ORM\Id @ORM\Column(type = "integer", options = {"unsigned": true}) @ORM\GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type = "integer", options = {"unsigned": true}) @ORM\GeneratedValue(strategy="IDENTITY") */
     private $id;
 
     /** @ORM\Column(type = "string", length = 200, unique = true) */
