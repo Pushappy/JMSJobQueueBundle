@@ -276,6 +276,25 @@ class RunCommand extends Command
 
     private function checkRunningJobs()
     {
+        $appendJobId = function (string $outputs, $jobId) {
+            $logs = explode(PHP_EOL, $outputs);
+            $out = '';
+            foreach ($logs as $log) {
+                if (empty($log)) {
+                    continue;
+                }
+
+                $json = json_decode($log, true);
+                if (false === $json) {
+                    continue;
+                }
+
+                $json['jms_job_id'] = $jobId;
+                $out .= json_encode($json) . PHP_EOL;
+            }
+
+            return $out;
+        };
         foreach ($this->runningJobs as $i => &$data) {
             $newOutput = substr($data['process']->getOutput(), $data['output_pointer']);
             $data['output_pointer'] += strlen($newOutput);
@@ -297,11 +316,11 @@ class RunCommand extends Command
 
             if ($this->verbose) {
                 if ( ! empty($newOutput)) {
-                    $this->output->writeln('Job '.$data['job']->getId().': '.str_replace("\n", "\nJob ".$data['job']->getId().": ", $newOutput));
+                    $this->output->writeln($appendJobId($newOutput, $data['job']->getId()));
                 }
 
                 if ( ! empty($newErrorOutput)) {
-                    $this->output->writeln('Job '.$data['job']->getId().': '.str_replace("\n", "\nJob ".$data['job']->getId().": ", $newErrorOutput));
+                    $this->output->writeln($appendJobId($newOutput, $data['job']->getId()));
                 }
             }
 
