@@ -320,7 +320,7 @@ class RunCommand extends Command
                 }
 
                 if ( ! empty($newErrorOutput)) {
-                    $this->output->writeln($appendJobId($newOutput, $data['job']->getId()));
+                    $this->output->writeln($appendJobId($newErrorOutput, $data['job']->getId()));
                 }
             }
 
