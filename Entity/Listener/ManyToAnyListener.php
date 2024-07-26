@@ -1,8 +1,8 @@
 <?php
 
 namespace JMS\JobQueueBundle\Entity\Listener;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Event\PreRemoveEventArgs;
 use JMS\JobQueueBundle\Entity\Job;
 
 /**
@@ -26,37 +26,37 @@ class ManyToAnyListener
         $this->ref = new \ReflectionProperty(Job::class, 'relatedEntities');
     }
 
-    public function postLoad(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    public function postLoad(\Doctrine\ORM\Event\PostLoadEventArgs $event)
     {
-        $entity = $event->getEntity();
-        if ( ! $entity instanceof \JMS\JobQueueBundle\Entity\Job) {
+        $entity = $event->getObject();
+        if ( ! $entity instanceof Job) {
             return;
         }
 
         $this->ref->setValue($entity, new PersistentRelatedEntitiesCollection($this->registry, $entity));
     }
 
-    public function preRemove(LifecycleEventArgs $event)
+    public function preRemove(PreRemoveEventArgs $event)
     {
-        $entity = $event->getEntity();
+        $entity = $event->getObject();
         if ( ! $entity instanceof Job) {
             return;
         }
 
-        $con = $event->getEntityManager()->getConnection();
+        $con = $event->getObjectManager()->getConnection();
         $con->executeStatement("DELETE FROM jms_job_related_entities WHERE job_id = :id", array(
             'id' => $entity->getId(),
         ));
     }
 
-    public function postPersist(\Doctrine\ORM\Event\LifecycleEventArgs $event)
+    public function postPersist(\Doctrine\ORM\Event\PostPersistEventArgs $event)
     {
-        $entity = $event->getEntity();
-        if ( ! $entity instanceof \JMS\JobQueueBundle\Entity\Job) {
+        $entity = $event->getObject();
+        if ( ! $entity instanceof Job) {
             return;
         }
 
-        $con = $event->getEntityManager()->getConnection();
+        $con = $event->getObjectManager()->getConnection();
         foreach ($this->ref->getValue($entity) as $relatedEntity) {
             $relClass = \Doctrine\Common\Util\ClassUtils::getClass($relatedEntity);
             $relId = $this->registry->getManagerForClass($relClass)->getMetadataFactory()->getMetadataFor($relClass)->getIdentifierValues($relatedEntity);
