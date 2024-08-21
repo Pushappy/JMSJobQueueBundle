@@ -91,7 +91,7 @@ class Job
     public const PRIORITY_HIGH = 5;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
     #[ORM\Column(type: "bigint", options: ["unsigned" => true])]
     private $id;
 
