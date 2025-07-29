@@ -85,8 +85,8 @@ class ManyToAnyListener
 
         $table = $schema->createTable('jms_job_related_entities');
         $table->addColumn('job_id', 'bigint', array('notnull' => true, 'unsigned' => true));
-        $table->addColumn('related_class', 'string', array('notnull' => true, 'length' => '150'));
-        $table->addColumn('related_id', 'string', array('notnull' => true, 'length' => '100'));
+        $table->addColumn('related_class', 'string', array('notnull' => true, 'length' => 150));
+        $table->addColumn('related_id', 'string', array('notnull' => true, 'length' => 100));
         $table->setPrimaryKey(array('job_id', 'related_class', 'related_id'));
         $table->addForeignKeyConstraint('jms_jobs', array('job_id'), array('id'));
     }
