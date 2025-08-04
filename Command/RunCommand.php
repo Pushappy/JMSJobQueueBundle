@@ -129,7 +129,6 @@ class RunCommand extends Command
         $this->env = $input->getOption('env');
         $this->verbose = $input->getOption('verbose');
         $this->output = $output;
-        $this->getEntityManager()->getConnection()->getConfiguration()->setSQLLogger(null);
 
         if ($this->verbose) {
             $this->output->writeln('Cleaning up stale jobs');
